@@ -61,7 +61,7 @@ describe('Spell', function() {
   });
 });
 
-describe('DamageSpell', function() {
+describe('DamageSpell', function() {0.0
   it('should be a function', function() {
     expect(DamageSpell).to.be.a('function');
   });

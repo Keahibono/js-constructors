@@ -10,6 +10,15 @@
  * @property {string} description
  */
 
+
+function Spell(name, cost, description){
+   this.name = name;
+   this.cost = cost;
+   this.description = description;
+   this.printDetails = function printDetails(){
+      console.log(this.name + ", " + this.cost + ", " + this.description);
+   }
+};
   /**
    * Print out all spell details and format it nicely.
    * The format doesnt matter, as long as it contains the spell name, cost, and description.
@@ -44,7 +53,12 @@
  * @property {number} damage
  * @property {string} description
  */
+ function DamageSpell(name, cost, damage, description){
+   Spell.call(this, name, cost, description);
+   this.damage = damage;
+ };
 
+DamageSpell.prototype = Object.create(Spell.prototype);
 /**
  * Now that you've created some spells, let's create
  * `Spellcaster` objects that can use them!
@@ -58,6 +72,20 @@
  * @property {mana} mana
  * @property {boolean} isAlive  Default value should be `true`.
  */
+function Spellcaster(name, health, mana){
+   this.name = name;
+   this.health = health;
+   this.mana = mana;
+   this.isAlive = isAlive = true;
+
+   this.inflictDamage = function inflictDamage(damage){
+      this.health -= damage;
+      if (this.health <= 0){
+         return this.isAlive = false, this.health = 0;
+      }
+      return this.health;
+   };
+
 
   /**
    * The spellcaster loses health equal to `damage`.
@@ -77,13 +105,41 @@
    * @param  {number} cost      The amount of mana to spend.
    * @return {boolean} success  Whether mana was successfully spent.
    */
+   this.spendMana = function spendMana(cost){
+      if (this.mana >= cost){
+         this.mana -= cost;
+         return true
+      }
+      return false;
+   };
 
+   this.invoke =function invoke(spell, target){
+//console.log(spell);
+      if (spell instanceof DamageSpell){
+
+         if(target instanceof Spellcaster){
+            if(this.spendMana(spell.cost)){
+              return target.inflictDamage(spell.damage);
+            }
+         }  else {
+            return false;
+         }
+
+      }
+
+      if (spell instanceof Spell){
+         return this.spendMana(spell.cost);
+
+      }
+      return false;
+   }
+};
   /**
    * Allows the spellcaster to cast spells.
    * The first parameter should either be a `Spell` or `DamageSpell`.
    * If it is a `DamageSpell`, the second parameter should be a `Spellcaster`.
    * The function should return `false` if the above conditions are not satisfied.
-   *
+   
    * You should use `instanceof` to check for these conditions.
    *
    * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/instanceof
